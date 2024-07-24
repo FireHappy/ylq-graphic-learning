@@ -10,7 +10,7 @@
 
 rst::pos_buf_id rst::rasterizer::load_positions(const std::vector<Eigen::Vector3f> &positions)
 {
-    auto id = get_next_id();
+    int id = get_next_id();
     pos_buf.emplace(id, positions);
 
     return {id};
@@ -18,7 +18,7 @@ rst::pos_buf_id rst::rasterizer::load_positions(const std::vector<Eigen::Vector3
 
 rst::ind_buf_id rst::rasterizer::load_indices(const std::vector<Eigen::Vector3i> &indices)
 {
-    auto id = get_next_id();
+    int id = get_next_id();
     ind_buf.emplace(id, indices);
 
     return {id};
@@ -126,7 +126,7 @@ void rst::rasterizer::draw_line(Eigen::Vector3f begin, Eigen::Vector3f end)
     }
 }
 
-auto to_vec4(const Eigen::Vector3f &v3, float w = 1.0f)
+Vector4f to_vec4(const Eigen::Vector3f &v3, float w = 1.0f)
 {
     return Vector4f(v3.x(), v3.y(), v3.z(), w);
 }
