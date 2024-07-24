@@ -1,0 +1,19 @@
+{
+    "files.associations": {
+        "*.cjson": "jsonc",
+        "*.wxss": "css",
+        "*.wxs": "javascript",
+        "*.ftl": "html",
+        "*.shader": "shaderlab",
+        "*.h": "cpp",
+        "*.cginc": "shaderlab",
+        "eigen": "cpp",
+        "algorithm": "cpp",
+        "map": "cpp",
+        "optional": "cpp",
+        "queue": "cpp",
+        "set": "cpp",
+        "unordered_map": "cpp",
+        "variant": "cpp"
+    }
+}

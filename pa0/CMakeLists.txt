@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_COMPILER "clang++")
 
+# eigen 路径
 include_directories("/opt/homebrew/Cellar/eigen/3.4.0_1/include")
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
