@@ -14,7 +14,7 @@
 
 ### 基于矩阵的计算公式:
 
-$\begin{Bmatrix}a&b\\c&d\end{Bmatrix}*\begin{Bmatrix}x\\y\end{Bmatrix}=\begin{Bmatrix}ax+by\\cx+dy\end{Bmatrix}$
+<font size=100>$\begin{Bmatrix}a&b\\c&d\end{Bmatrix}*\begin{Bmatrix}x\\y\end{Bmatrix}=\begin{Bmatrix}ax+by\\cx+dy\end{Bmatrix}$</font>
 
 ### 基于 1 我们将 P(1,0) 带入公式
 
@@ -30,17 +30,18 @@ $\begin{Bmatrix}a&b\\c&d\end{Bmatrix}*\begin{Bmatrix}x\\y\end{Bmatrix}=\begin{Bm
 
 ### 综上得出旋转矩阵为:
 
-$\begin{Bmatrix}cosθ&-sinθ \\sinθ  &cosθ\end{Bmatrix}$
+<font size=100>$\begin{Bmatrix}cosθ&-sinθ \\sinθ  &cosθ\end{Bmatrix}$</font>
 
 ### 平移矩阵:
-$\begin{Bmatrix} 1 & 0 &Δx \\ 0 & 1 &Δy  \\ 0 & 0  & 1\end{Bmatrix}* \begin{Bmatrix} x\\ y\\1\end{Bmatrix}=\begin{Bmatrix} x+Δx\\ y+Δy\\1\end{Bmatrix}$
-
+<font size=100>$\begin{Bmatrix} 1 & 0 &Δx \\ 0 & 1 &Δy  \\ 0 & 0  & 1\end{Bmatrix}* \begin{Bmatrix} x\\ y\\1\end{Bmatrix}=\begin{Bmatrix} x+Δx\\ y+Δy\\1\end{Bmatrix}$
+</font>
 
 
 ### 先平移后旋转 (矩阵变换操作从右边往左边看)
 
-$\begin{Bmatrix} cosθ &-sinθ  &0 \\ sinθ & cosθ & 0\\  0& 0 &1\end{Bmatrix}*\begin{Bmatrix} 1 & 0 &Δx \\ 0 & 1 &Δy  \\ 0 & 0  & 1\end{Bmatrix}=\begin{Bmatrix} cosθ &-sinθ  &cosθ*Δx- sinθ*Δx \\ sinθ & cosθ &sinθ*Δy+ cosθ*Δy \\  0& 0 &1\end{Bmatrix}$
-
+<font size=10>$\begin{Bmatrix} cosθ &-sinθ  &0 \\ sinθ & cosθ & 0\\  0& 0 &1\end{Bmatrix}*\begin{Bmatrix} 1 & 0 &Δx \\ 0 & 1 &Δy  \\ 0 & 0  & 1\end{Bmatrix}=\begin{Bmatrix} cosθ &-sinθ  &cosθ*Δx- sinθ*Δx \\ sinθ & cosθ &sinθ*Δy+ cosθ*Δy \\  0& 0 &1\end{Bmatrix}$
+</font>
 
 ### 先旋转后平移 (矩阵变换操作从右边往左边看)
-$\begin{Bmatrix} 1 & 0 &Δx \\ 0 & 1 &Δy  \\ 0 & 0  & 1\end{Bmatrix}* \begin{Bmatrix} cosθ &-sinθ  &0 \\ sinθ & cosθ & 0\\  0& 0 &1\end{Bmatrix}=\begin{Bmatrix} cosθ &-sinθ  &Δx \\ sinθ & cosθ &Δy \\  0& 0 &1\end{Bmatrix}$
+<font size=10> $\begin{Bmatrix} 1 & 0 &Δx \\ 0 & 1 &Δy  \\ 0 & 0  & 1\end{Bmatrix}* \begin{Bmatrix} cosθ &-sinθ  &0 \\ sinθ & cosθ & 0\\  0& 0 &1\end{Bmatrix}=\begin{Bmatrix} cosθ &-sinθ  &Δx \\ sinθ & cosθ &Δy \\  0& 0 &1\end{Bmatrix}$
+</font>
