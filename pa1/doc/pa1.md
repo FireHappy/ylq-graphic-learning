@@ -12,7 +12,7 @@
 
 # 一 . P(x,y,z)点绕 Z 轴旋转 θ 得到 P1(x1,y1,z1)
 
-![alt text](P绕Z轴旋转θ得到P'.png)
+<img src="P绕Z轴旋转θ得到P'.png" alt="示例图片" width="1000">
 
 ### 1. P (1,0,z) 绕 Z 轴旋转 θ 角度,得到 P1(cosθ,sinθ,z)
 
@@ -44,7 +44,8 @@
 
 ### 综上我们可以得到绕 Z 轴的旋转矩阵是
 
-![alt text](image-2.png)
+<font size=10> $\begin{Bmatrix} cosθ & sinθ & 0 \\ -sinθ & cosθ &0  \\ 0 & 0  & 1\end{Bmatrix}$
+</font>
 
 #
 
@@ -52,7 +53,7 @@
 
 # 二. P(x,y,z)点绕 Y 轴旋转 θ 得到 P'(x1,y1,z1)
 
-![alt text](P绕Y轴旋转θ得到P'.png)
+<img src="P绕Y轴旋转θ得到P'.png" alt="示例图片" width="1000">
 
 ### 1. P (1,y,0) 绕 Y 轴旋转 θ 角度,得到 P1(cos(θ),y,sin(θ))
 
@@ -82,9 +83,11 @@
 
 -   ## d=0,e=1,f=0
 
-### 综上我们可以得到绕 Y 轴的旋转矩阵是
+### 综上我们可以得到绕 Y 轴的旋转矩阵:
 
-![alt text](image-4.png)
+
+<font size=10> $\begin{Bmatrix} cosθ & 0 & -sinθ \\ 0 & 1 &0  \\ sinθ & 0  & cosθ\end{Bmatrix}$
+</font>
 
 #
 
@@ -92,7 +95,7 @@
 
 # 三. P(x,y,z)点绕 Y 轴旋转 θ 得到 P'(x1,y1,z1)
 
-![alt text](P绕X轴旋转θ得到P'.png)
+<img src="P绕X轴旋转θ得到P'.png" alt="示例图片" width="1000">
 
 ### 1. P (x,1,0) 绕 Y 轴旋转 θ 角度,得到 P1(x,cos(θ),sin(θ))
 
@@ -122,6 +125,8 @@
 
 -   ## a=1,b=0,c=0
 
-### 综上我们可以得到绕 Z 轴的旋转矩阵是
+### 综上我们可以得到绕 Z 轴的旋转矩阵:
 
-![alt text](image-3.png)
+<font size=10> $\begin{Bmatrix} 1 & 0 & 0 \\ 0 & cosθ &-sinθ  \\ 0 & sinθ  & cosθ\end{Bmatrix}$
+</font>
+

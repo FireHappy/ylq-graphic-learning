@@ -32,7 +32,7 @@
 
 -   ## c\*0+d=cosθ => d=cosθ
 
-### 综上得出旋转矩阵为:
+### 综上得出旋转矩阵为:(该旋转矩阵重点记忆,推导3维旋转矩阵的基础)
 
 <font size=100>$\begin{Bmatrix}cosθ&-sinθ \\sinθ  &cosθ\end{Bmatrix}$</font>
 
