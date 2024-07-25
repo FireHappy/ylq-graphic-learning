@@ -44,7 +44,7 @@
 
 ### 综上我们可以得到绕 Z 轴的旋转矩阵是
 
-<font size=10> $\begin{Bmatrix} cosθ & sinθ & 0 \\ -sinθ & cosθ &0  \\ 0 & 0  & 1\end{Bmatrix}$
+<font size=10> $\begin{Bmatrix} cosθ & -sinθ & 0 \\ sinθ & cosθ &0  \\ 0 & 0  & 1\end{Bmatrix}$
 </font>
 
 #
@@ -73,7 +73,7 @@
 
 ### 基于 2 我们将 P2(0,y,1) 带入公式
 
--   ## 0\*a+by+c=-sinθ => c=-sinθ,c=0
+-   ## 0\*a+by+c=-sinθ =>b=0, c=-sinθ
 
 -   ## 0\*d+ey+f= y => ey+f=y
 
@@ -93,13 +93,13 @@
 
 #
 
-# 三. P(x,y,z)点绕 Y 轴旋转 θ 得到 P'(x1,y1,z1)
+# 三. P(x,y,z)点绕 X 轴旋转 θ 得到 P'(x1,y1,z1)
 
 <img src="P绕X轴旋转θ得到P'.png" alt="示例图片" width="1000">
 
-### 1. P (x,1,0) 绕 Y 轴旋转 θ 角度,得到 P1(x,cos(θ),sin(θ))
+### 1. P (x,1,0) 绕 X 轴旋转 θ 角度,得到 P1(x,cos(θ),sin(θ))
 
-### 2. P2(x,0,1) 绕 Y 轴旋转 θ 角度,得到 P3(x,-sin(θ),cos(θ))
+### 2. P2(x,0,1) 绕 X 轴旋转 θ 角度,得到 P3(x,-sin(θ),cos(θ))
 
 # 基于矩阵计算公式
 
@@ -125,7 +125,7 @@
 
 -   ## a=1,b=0,c=0
 
-### 综上我们可以得到绕 Z 轴的旋转矩阵:
+### 综上我们可以得到绕 X 轴的旋转矩阵:
 
 <font size=10> $\begin{Bmatrix} 1 & 0 & 0 \\ 0 & cosθ &-sinθ  \\ 0 & sinθ  & cosθ\end{Bmatrix}$
 </font>
