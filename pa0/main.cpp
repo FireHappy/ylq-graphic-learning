@@ -58,8 +58,8 @@ int main()
 
     // rotation
     Matrix3f rotationMatrix;
-    rotationMatrix << cos(θ), sin(θ), 0,
-        -sin(θ), cos(θ), 0,
+    rotationMatrix << cos(θ), -sin(θ), 0,
+        sin(θ), cos(θ), 0,
         0, 0, 1;
     Vector3f targetPoint = rotationMatrix * point;
     std::cout << "rotation targetPoint:" << "(" << targetPoint.x() << "," << targetPoint.y() << ")" << std::endl;
@@ -72,8 +72,8 @@ int main()
     std::cout << "rotation and move targetPoint:" << "(" << targetPoint.x() << "," << targetPoint.y() << ")" << std::endl;
     // rotation and move
     Matrix3f transformMatrix;
-    transformMatrix << cos(θ), sin(θ), 1,
-        -sin(θ), cos(θ), 2,
+    transformMatrix << cos(θ), -sin(θ), 1,
+        sin(θ), cos(θ), 2,
         0, 0, 1;
     Vector3f targetPoint1 = transformMatrix * point;
     std::cout << "transform targetPoint:" << "(" << targetPoint1.x() << "," << targetPoint1.y() << ")" << std::endl;

@@ -4,43 +4,44 @@
 
 # 旋转矩阵的推演
 
-<img src="image.png" alt="示例图片" width="1000">
+<img src="P 绕原点旋转θ角度得到P'.png" alt="示例图片" width="1000">
 
 ## 如上图所示
 
-### P (2,0) 绕圆点旋转 θ 角度,得到 P1(2\*cosθ,2\*sinθ)
+### 1. P (1,0) 绕圆点旋转 θ 角度,得到 P1(cosθ,sinθ)
 
-### P3(0,2) 绕圆点旋转 θ 角度,得到 P4(2\*cosθ,-2\*sinθ)
+### 2. P2(0,1) 绕圆点旋转 θ 角度,得到 P3(-sinθ,cosθ)
 
-## 基于矩阵的计算公式
+### 基于矩阵的计算公式:
 
-![alt text](image-1.png)
+<font size=100>$\begin{Bmatrix}a&b\\c&d\end{Bmatrix}*\begin{Bmatrix}x\\y\end{Bmatrix}=\begin{Bmatrix}ax+by\\cx+dy\end{Bmatrix}$</font>
 
-## 基于 P(2,0) 绕圆点旋转 θ 角度到 P1(2\*cosθ,2\*sinθ) 的过程
+### 基于 1 我们将 P(1,0) 带入公式
 
-![alt text](image-4.png)
+-   ## a+b\*0=cosθ => a=cosθ
 
-## 得出 a=cosθ,c=sinθ
+-   ## c+d\*0=sinθ => c=sinθ
 
-## 基于 P3(0,2) 绕圆点旋转 θ 角度到 P4(-2\*sinθ,2\*cosθ) 的过程
+### 基于 2 我们将 P2(0,1) 带入公式
 
-![alt text](image-7.png)
+-   ## a\*0+b=-sinθ => b=-sinθ
 
-## 得出 b=-sinθ,d=cosθ
+-   ## c\*0+d=cosθ => d=cosθ
 
-## 综上得出旋转矩阵为
+### 综上得出旋转矩阵为:
 
-![alt text](image-10.png)
-888
+<font size=100>$\begin{Bmatrix}cosθ&-sinθ \\sinθ  &cosθ\end{Bmatrix}$</font>
 
-# 平移矩阵的推演
+### 平移矩阵:
+<font size=100>$\begin{Bmatrix} 1 & 0 &Δx \\ 0 & 1 &Δy  \\ 0 & 0  & 1\end{Bmatrix}* \begin{Bmatrix} x\\ y\\1\end{Bmatrix}=\begin{Bmatrix} x+Δx\\ y+Δy\\1\end{Bmatrix}$
+</font>
 
-![alt text](image-9.png)
 
-# 先平移后旋转 (矩阵变换操作从右边往左边看)
+### 先平移后旋转 (矩阵变换操作从右边往左边看)
 
-![alt text](QianJianTec1721570233957.jpg)
+<font size=10>$\begin{Bmatrix} cosθ &-sinθ  &0 \\ sinθ & cosθ & 0\\  0& 0 &1\end{Bmatrix}*\begin{Bmatrix} 1 & 0 &Δx \\ 0 & 1 &Δy  \\ 0 & 0  & 1\end{Bmatrix}=\begin{Bmatrix} cosθ &-sinθ  &cosθ*Δx- sinθ*Δx \\ sinθ & cosθ &sinθ*Δy+ cosθ*Δy \\  0& 0 &1\end{Bmatrix}$
+</font>
 
-# 先旋转后平移 (矩阵变换操作从右边往左边看)
-
-![alt text](QianJianTec1721570370474.jpg)
+### 先旋转后平移 (矩阵变换操作从右边往左边看)
+<font size=10> $\begin{Bmatrix} 1 & 0 &Δx \\ 0 & 1 &Δy  \\ 0 & 0  & 1\end{Bmatrix}* \begin{Bmatrix} cosθ &-sinθ  &0 \\ sinθ & cosθ & 0\\  0& 0 &1\end{Bmatrix}=\begin{Bmatrix} cosθ &-sinθ  &Δx \\ sinθ & cosθ &Δy \\  0& 0 &1\end{Bmatrix}$
+</font>
