@@ -69,11 +69,11 @@
 
 -   ## d+ey+z\*0= y => d+ey=y
 
--   ## g+hy+i\*0=sinθ => g=sinθ,e=0
+-   ## g+hy+i\*0=-sinθ => g=-sinθ,e=0
 
 ### 基于 2 我们将 P2(0,y,1) 带入公式
 
--   ## 0\*a+by+c=-sinθ =>b=0, c=-sinθ
+-   ## 0\*a+by+c=sinθ =>b=0, c=sinθ
 
 -   ## 0\*d+ey+f= y => ey+f=y
 
@@ -86,7 +86,7 @@
 ### 综上我们可以得到绕 Y 轴的旋转矩阵:
 
 
-<font size=10> $\begin{Bmatrix} cosθ & 0 & -sinθ \\ 0 & 1 &0  \\ sinθ & 0  & cosθ\end{Bmatrix}$
+<font size=10> $\begin{Bmatrix} cosθ & 0 & sinθ \\ 0 & 1 &0  \\ -sinθ & 0  & cosθ\end{Bmatrix}$
 </font>
 
 #

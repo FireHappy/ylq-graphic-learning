@@ -27,6 +27,7 @@ Eigen::Matrix4f get_model_matrix(float rotation_angle)
     // Create the model matrix for rotating the triangle around the Z axis.
     // Then return it.
     Eigen::Matrix4f translate;
+
     translate << 1, 0, 0, 1,
         0, 1, 0, 1,
         0, 0, 1, 1,
