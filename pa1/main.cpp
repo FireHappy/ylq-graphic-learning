@@ -19,6 +19,11 @@ Eigen::Matrix4f get_view_matrix(Eigen::Vector3f eye_pos)
     return view;
 }
 
+float anlge_to_radian(float angle)
+{
+    return angle * MY_PI / 180;
+}
+
 Eigen::Matrix4f get_model_matrix(float rotation_angle)
 {
     Eigen::Matrix4f model = Eigen::Matrix4f::Identity();
@@ -28,9 +33,9 @@ Eigen::Matrix4f get_model_matrix(float rotation_angle)
     // Then return it.
     Eigen::Matrix4f translate;
 
-    translate << 1, 0, 0, 1,
-        0, 1, 0, 1,
-        0, 0, 1, 1,
+    translate << cos(anlge_to_radian(rotation_angle)), sin(anlge_to_radian(rotation_angle)), 0, 0,
+        -sin(anlge_to_radian(rotation_angle)), cos(anlge_to_radian(rotation_angle)), 0, 0,
+        0, 0, 1, 0,
         0, 0, 0, 1;
     model = translate * model;
 
