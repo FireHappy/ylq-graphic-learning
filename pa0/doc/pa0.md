@@ -49,3 +49,5 @@
 ### 先旋转后平移 (矩阵变换操作从右边往左边看)
 <font size=10> $\begin{Bmatrix} 1 & 0 &Δx \\ 0 & 1 &Δy  \\ 0 & 0  & 1\end{Bmatrix}* \begin{Bmatrix} cosθ &-sinθ  &0 \\ sinθ & cosθ & 0\\  0& 0 &1\end{Bmatrix}=\begin{Bmatrix} cosθ &-sinθ  &Δx \\ sinθ & cosθ &Δy \\  0& 0 &1\end{Bmatrix}$
 </font>
+
+![alt text](image.png)
