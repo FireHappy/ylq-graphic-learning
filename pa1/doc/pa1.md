@@ -6,7 +6,7 @@
 
 # https://tilipa.zlsam.com/handdraw/
 
-# 3D 旋转矩阵的推演 基于 Unity 左手坐标系
+# 3D 旋转矩阵的推演
 
 #
 
@@ -42,9 +42,16 @@
 
 -   ## g=0,h=0,i=1
 
-### 综上我们可以得到绕 Z 轴的旋转矩阵是
+### 综上我们可以得到左手坐标系绕 Z 轴的旋转矩阵:
 
 <font size=10> $\begin{Bmatrix} cosθ & -sinθ & 0 \\ sinθ & cosθ &0  \\ 0 & 0  & 1\end{Bmatrix}$
+</font>
+
+<img src="右手坐标系_P绕Z轴旋转θ得到P'.png" alt="示例图片" width="1000">
+
+### 同理我们可以得到右手坐标系绕 Z 轴的旋转矩阵:
+
+<font size=10> $\begin{Bmatrix} cosθ & sinθ & 0 \\ -sinθ & cosθ &0  \\ 0 & 0  & 1\end{Bmatrix}$
 </font>
 
 #
@@ -83,10 +90,18 @@
 
 -   ## d=0,e=1,f=0
 
-### 综上我们可以得到绕 Y 轴的旋转矩阵:
+### 综上我们可以得到左手坐标系绕 Y 轴的旋转矩阵:
 
 
 <font size=10> $\begin{Bmatrix} cosθ & 0 & sinθ \\ 0 & 1 &0  \\ -sinθ & 0  & cosθ\end{Bmatrix}$
+</font>
+
+<img src="右手坐标系_P绕Y轴旋转θ得到P'.png" alt="示例图片" width="1000">
+
+
+### 同理我们可以得到右手坐标系绕 Y 轴的旋转矩阵:
+
+<font size=10> $\begin{Bmatrix} cosθ & 0 & -sinθ \\ 0 & 1 &0  \\ sinθ & 0  & cosθ\end{Bmatrix}$
 </font>
 
 #
@@ -125,8 +140,16 @@
 
 -   ## a=1,b=0,c=0
 
-### 综上我们可以得到绕 X 轴的旋转矩阵:
+### 综上我们可以得到左手坐标系绕 X 轴的旋转矩阵:
 
 <font size=10> $\begin{Bmatrix} 1 & 0 & 0 \\ 0 & cosθ &-sinθ  \\ 0 & sinθ  & cosθ\end{Bmatrix}$
+</font>
+
+
+<img src="右手坐标系_P绕X轴旋转θ得到P'.png" alt="示例图片" width="1000">
+
+### 同理我们可以得到右手坐标系绕 X 轴的旋转矩阵:
+
+<font size=10> $\begin{Bmatrix} 1 & 0 & 0 \\ 0 & cosθ &sinθ  \\ 0 & -sinθ  & cosθ\end{Bmatrix}$
 </font>
 
