@@ -35,8 +35,8 @@ Eigen::Matrix4f get_model_matrix(float rotation_angle)
     // Then return it.
     Eigen::Matrix4f rotate;
 
-    rotate << cos(anlge_to_radian(rotation_angle)), sin(anlge_to_radian(rotation_angle)), 0, 0,
-        -sin(anlge_to_radian(rotation_angle)), cos(anlge_to_radian(rotation_angle)), 0, 0,
+    rotate << cos(anlge_to_radian(rotation_angle)), -sin(anlge_to_radian(rotation_angle)), 0, 0,
+        sin(anlge_to_radian(rotation_angle)), cos(anlge_to_radian(rotation_angle)), 0, 0,
         0, 0, 1, 0,
         0, 0, 0, 1;
     model = rotate * model;
@@ -55,11 +55,18 @@ Eigen::Matrix4f get_projection_matrix(float eye_fov, float aspect_ratio,
     // Create the projection matrix for the given parameters.
     // Then return it.
 
-    projection << aspect_ratio / (tan(anlge_to_radian(eye_fov / 2))), 0, 0, 0,
-        0, -zNear * aspect_ratio / tan(anlge_to_radian(eye_fov / 2)), 0, 0,
-        0, 0, 2 * (zNear + zFar) / (zNear - zFar), (zNear + zFar) * zNear * zFar / 2,
+    Eigen::Matrix4f Mortho;
+    Mortho << 1 / (tan(anlge_to_radian(eye_fov / 2) * aspect_ratio * zNear)), 0, 0, 0,
+        0, 1 / (tan(anlge_to_radian(eye_fov / 2) * aspect_ratio)), 0, 0,
+        0, 0, 2 / (zNear - zFar), -(zNear + zFar) / 2,
+        0, 0, 0, 1;
+    Eigen::Matrix4f Mpersp_ortho;
+    Mpersp_ortho << zNear, 0, 0, 0,
+        0, zNear, 0, 0,
+        0, 0, zNear + zFar, -zNear * zFar,
         0, 0, 1, 0;
 
+    projection = Mortho * Mpersp_ortho * projection;
     return projection;
 }
 
@@ -88,6 +95,7 @@ int main(int argc, const char **argv)
 
     std::vector<Eigen::Vector3f> pos{{2, 0, -2}, {0, 2, -2}, {-2, 0, -2}};
 
+    // 点的索引
     std::vector<Eigen::Vector3i> ind{{0, 1, 2}};
 
     auto pos_id = r.load_positions(pos);
@@ -119,7 +127,7 @@ int main(int argc, const char **argv)
 
         r.set_model(get_model_matrix(angle));
         r.set_view(get_view_matrix(eye_pos));
-        r.set_projection(get_projection_matrix(60, 1, 0.1, 50));
+        r.set_projection(get_projection_matrix(45, 1, 0.1, 50));
 
         r.draw(pos_id, ind_id, rst::Primitive::Triangle);
 
