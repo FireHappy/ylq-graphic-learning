@@ -34,6 +34,65 @@ float anlge_to_radian(float angle)
     return angle * MY_PI / 180;
 }
 
+/**
+ * @brief Get the angle object
+ *  计算两个向量之间的夹角(弧度)
+ * @param v1
+ * @param v2
+ * @return float
+ */
+float get_angle(Eigen::Vector3f v1, Eigen::Vector3f v2)
+{
+    float dot = v1.dot(v2);
+    double cosθ = dot / (v1.norm() * v2.norm());
+    return std::acos(cosθ);
+}
+
+Eigen::Matrix4f get_rotation(Eigen::Vector3f axis, float anlge)
+{
+    // 1.获取轴在ZY平面的投影
+    Vector3f axis_zy = Eigen::Vector3f(0, axis.y(), axis.z());
+    // 2.计算ZYaxis与Y轴的夹角
+    float anlge_zy = get_angle(axis_zy, Eigen::Vector3f(0, 1, 0));
+    // 3.判断ZYaxis是在Y轴的左边还是右边
+    if (axis_zy.cross(Eigen::Vector3f(0, 1, 0)).x() > 0)
+    {
+    }
+    // 4.构建让ZYaxis转向Y轴的旋转矩阵,等同与ZYaxis上的某个点,绕X轴旋转anlge到Y轴,角的正负由3判断
+    Eigen::Matrix4f rotate_x;
+    rotate_x << 1, 0, 0, 0,
+        0, cos(anlge_zy), -sin(anlge_zy), 0,
+        0, sin(anlge_zy), cos(anlge_zy), 0,
+        0, 0, 0, 1;
+
+    // 1.获取轴在XY平面的投影
+    Vector3f axis_xy = Eigen::Vector3f(axis.x(), axis.y(), 0);
+    // 2.计算XYaxis与Y轴的夹角
+    float anlge_xy = get_angle(axis_xy, Eigen::Vector3f(0, 1, 0));
+    // 3.判断ZYaxis是在Y轴的左边还是右边
+    if (axis_xy.cross(Eigen::Vector3f(0, 1, 0)).x() > 0)
+    {
+    }
+    // 4.构建让axis_xy转向Y轴的旋转矩阵,等同与axis_xy上的某个点,绕Z轴旋转anlge到Y轴,角的正负由3判断
+    Eigen::Matrix4f rotate_z;
+    rotate_z << cos(anlge_xy), -sin(anlge_xy), 0, 0,
+        cos(anlge_xy), sin(anlge_xy), sin(anlge_xy), 0,
+        0, 0, 1, 0,
+        0, 0, 0, 1;
+
+    // 综上我们就得到了将axis转换到Y轴上的方法
+    Eigen::Matrix4f rotate;
+    rotate = rotate_z * rotate_x;
+    // 构建绕Y轴旋转angle矩阵
+    Eigen::Matrix4f rotate_y;
+    rotate_y << cos(anlge), 0, sin(anlge), 0,
+        0, 1, 0, 0,
+        -sin(anlge), 0, cos(anlge), 0,
+        0, 0, 0, 1;
+    // 基于 P'= My->a *My-angle *Ma->y*P
+    return rotate.transpose() * rotate_y * rotate;
+}
+
 Eigen::Matrix4f get_model_matrix(float rotation_angle)
 {
     Eigen::Matrix4f model = Eigen::Matrix4f::Identity();
