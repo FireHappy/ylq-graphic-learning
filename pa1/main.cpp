@@ -52,42 +52,58 @@ Eigen::Matrix4f get_rotation(Eigen::Vector3f axis, float anlge)
 {
     // 1.获取轴在ZY平面的投影
     Vector3f axis_zy = Eigen::Vector3f(0, axis.y(), axis.z());
-    // 2.计算ZYaxis与Y轴的夹角
-    float anlge_zy = get_angle(axis_zy, Eigen::Vector3f(0, 1, 0));
-    // 3.判断ZYaxis是在Y轴的左边还是右边
-    if (axis_zy.cross(Eigen::Vector3f(0, 1, 0)).x() > 0)
-    {
-    }
-    // 4.构建让ZYaxis转向Y轴的旋转矩阵,等同与ZYaxis上的某个点,绕X轴旋转anlge到Y轴,角的正负由3判断
     Eigen::Matrix4f rotate_x;
-    rotate_x << 1, 0, 0, 0,
-        0, cos(anlge_zy), -sin(anlge_zy), 0,
-        0, sin(anlge_zy), cos(anlge_zy), 0,
-        0, 0, 0, 1;
+    if (axis_zy.x() == 0 && axis_zy.y() == 0 && axis_zy.z() == 0)
+    {
+        rotate_x = Eigen::Matrix4f::Identity();
+    }
+    else
+    {
+        // 2.计算ZYaxis与Y轴的夹角
+        float anlge_zy = get_angle(axis_zy, Eigen::Vector3f(0, 1, 0));
+        // 3.判断ZYaxis是在Y轴的左边还是右边
+        if (axis_zy.z() > 0)
+        {
+            anlge_zy = -anlge_zy;
+        }
+        // 4.构建让ZYaxis转向Y轴的旋转矩阵,等同与ZYaxis上的某个点,绕X轴旋转anlge到Y轴,角的正负由3判断
+        rotate_x << 1, 0, 0, 0,
+            0, cos(anlge_zy), -sin(anlge_zy), 0,
+            0, sin(anlge_zy), cos(anlge_zy), 0,
+            0, 0, 0, 1;
+    }
 
     // 1.获取轴在XY平面的投影
     Vector3f axis_xy = Eigen::Vector3f(axis.x(), axis.y(), 0);
-    // 2.计算XYaxis与Y轴的夹角
-    float anlge_xy = get_angle(axis_xy, Eigen::Vector3f(0, 1, 0));
-    // 3.判断ZYaxis是在Y轴的左边还是右边
-    if (axis_xy.cross(Eigen::Vector3f(0, 1, 0)).x() > 0)
-    {
-    }
-    // 4.构建让axis_xy转向Y轴的旋转矩阵,等同与axis_xy上的某个点,绕Z轴旋转anlge到Y轴,角的正负由3判断
     Eigen::Matrix4f rotate_z;
-    rotate_z << cos(anlge_xy), -sin(anlge_xy), 0, 0,
-        cos(anlge_xy), sin(anlge_xy), sin(anlge_xy), 0,
-        0, 0, 1, 0,
-        0, 0, 0, 1;
+    if (axis_xy.x() == 0 && axis_xy.x() == 0 && axis_xy.x() == 0)
+    {
+        rotate_z = Eigen::Matrix4f::Identity();
+    }
+    else
+    {
+        // 2.计算XYaxis与Y轴的夹角
+        float anlge_xy = get_angle(axis_xy, Eigen::Vector3f(0, 1, 0));
+        // 3.判断ZYaxis是在Y轴的左边还是右边
+        if (axis_xy.x() < 0)
+        {
+            anlge_xy = -anlge_xy;
+        }
+        // 4.构建让axis_xy转向Y轴的旋转矩阵,等同与axis_xy上的某个点,绕Z轴旋转anlge到Y轴,角的正负由3判断
+        rotate_z << cos(anlge_xy), -sin(anlge_xy), 0, 0,
+            cos(anlge_xy), sin(anlge_xy), 0, 0,
+            0, 0, 1, 0,
+            0, 0, 0, 1;
+    }
 
     // 综上我们就得到了将axis转换到Y轴上的方法
     Eigen::Matrix4f rotate;
     rotate = rotate_z * rotate_x;
     // 构建绕Y轴旋转angle矩阵
     Eigen::Matrix4f rotate_y;
-    rotate_y << cos(anlge), 0, sin(anlge), 0,
+    rotate_y << cos(anlge_to_radian(anlge)), 0, sin(anlge_to_radian(anlge)), 0,
         0, 1, 0, 0,
-        -sin(anlge), 0, cos(anlge), 0,
+        -sin(anlge_to_radian(anlge)), 0, cos(anlge_to_radian(anlge)), 0,
         0, 0, 0, 1;
     // 基于 P'= My->a *My-angle *Ma->y*P
     return rotate.transpose() * rotate_y * rotate;
@@ -101,11 +117,12 @@ Eigen::Matrix4f get_model_matrix(float rotation_angle)
     // Create the model matrix for rotating the triangle around the Z a'aaxis.
     // Then return it.
     Eigen::Matrix4f rotate;
+    rotate = get_rotation(Eigen::Vector3f(0, 0, 1), rotation_angle);
 
-    rotate << cos(anlge_to_radian(rotation_angle)), -sin(anlge_to_radian(rotation_angle)), 0, 0,
-        sin(anlge_to_radian(rotation_angle)), cos(anlge_to_radian(rotation_angle)), 0, 0,
-        0, 0, 1, 0,
-        0, 0, 0, 1;
+    // rotate << cos(anlge_to_radian(rotation_angle)), -sin(anlge_to_radian(rotation_angle)), 0, 0,
+    //     sin(anlge_to_radian(rotation_angle)), cos(anlge_to_radian(rotation_angle)), 0, 0,
+    //     0, 0, 1, 0,
+    //     0, 0, 0, 1;
     model = rotate * model;
 
     return model;
