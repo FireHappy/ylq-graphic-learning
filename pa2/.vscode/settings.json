@@ -1,0 +1,19 @@
+{
+    "files.associations": {
+        "*.excalidraw": "json",
+        "*.excalidrawlib": "json",
+        "*.cjson": "jsonc",
+        "*.wxss": "css",
+        "*.wxs": "javascript",
+        "*.ftl": "html",
+        "*.shader": "shaderlab",
+        "*.h": "cpp",
+        "*.cginc": "shaderlab",
+        "map": "cpp",
+        "optional": "cpp",
+        "queue": "cpp",
+        "set": "cpp",
+        "unordered_map": "cpp",
+        "variant": "cpp"
+    }
+}
