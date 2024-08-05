@@ -34,7 +34,7 @@ rst::col_buf_id rst::rasterizer::load_colors(const std::vector<Eigen::Vector3f> 
     return {id};
 }
 
-auto to_vec4(const Eigen::Vector3f& v3, float w = 1.0f)
+Vector4f to_vec4(const Eigen::Vector3f& v3, float w = 1.0f)
 {
     return Vector4f(v3.x(), v3.y(), v3.z(), w);
 }
