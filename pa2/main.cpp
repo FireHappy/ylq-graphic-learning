@@ -1,4 +1,3 @@
-// clang-format off
 #include <iostream>
 #include <opencv2/opencv.hpp>
 #include "rasterizer.hpp"
@@ -12,12 +11,12 @@ Eigen::Matrix4f get_view_matrix(Eigen::Vector3f eye_pos)
     Eigen::Matrix4f view = Eigen::Matrix4f::Identity();
 
     Eigen::Matrix4f translate;
-    translate << 1,0,0,-eye_pos[0],
-                 0,1,0,-eye_pos[1],
-                 0,0,1,-eye_pos[2],
-                 0,0,0,1;
+    translate << 1, 0, 0, -eye_pos[0],
+        0, 1, 0, -eye_pos[1],
+        0, 0, 1, -eye_pos[2],
+        0, 0, 0, 1;
 
-    view = translate*view;
+    view = translate * view;
 
     return view;
 }
@@ -28,15 +27,52 @@ Eigen::Matrix4f get_model_matrix(float rotation_angle)
     return model;
 }
 
+float anlge_to_radian(float angle)
+{
+    return angle * MY_PI / 180;
+}
+
 Eigen::Matrix4f get_projection_matrix(float eye_fov, float aspect_ratio, float zNear, float zFar)
 {
-    // TODO: Copy-paste your implementation from the previous assignment.
-    Eigen::Matrix4f projection;
+    // Students will implement this function
+    Eigen::Matrix4f projection = Eigen::Matrix4f::Identity();
 
+    // 构建正交投影矩阵
+    Eigen::Matrix4f Mortho = Eigen::Matrix4f::Identity();
+    float n = zNear, f = zFar;
+    float t = tan(anlge_to_radian(eye_fov / 2)) * n;
+    float b = -t;
+    float r = aspect_ratio * t;
+    float l = -r;
+
+    // 将bounds长方体,移动到原点
+    Eigen::Matrix4f translate = Eigen::Matrix4f::Identity();
+    translate << 1, 0, 0, -(r + l) / 2,
+        0, 1, 0, -(t + b) / 2,
+        0, 0, 1, -(n + f) / 2,
+        0, 0, 0, 1;
+
+    // 将bounds长方体,缩放成边长为2的立方体
+    Eigen::Matrix4f scale = Eigen::Matrix4f::Identity();
+    translate << 2 / (r - l), 0, 0, 0,
+        0, 2 / (t - b), 0, 0,
+        0, 0, 2 / (n - f), 0,
+        0, 0, 0, 1;
+
+    Mortho = scale * translate;
+
+    // 构建将视椎体压缩成长方体的矩阵
+    Eigen::Matrix4f Mpersp_ortho;
+    Mpersp_ortho << n, 0, 0, 0,
+        0, n, 0, 0,
+        0, 0, n + f, -n * f,
+        0, 0, 1, 0;
+
+    projection = Mortho * Mpersp_ortho * projection;
     return projection;
 }
 
-int main(int argc, const char** argv)
+int main(int argc, const char **argv)
 {
     float angle = 0;
     bool command_line = false;
@@ -50,34 +86,27 @@ int main(int argc, const char** argv)
 
     rst::rasterizer r(700, 700);
 
-    Eigen::Vector3f eye_pos = {0,0,5};
+    Eigen::Vector3f eye_pos = {0, 0, 5};
 
+    std::vector<Eigen::Vector3f> pos{
+        {2, 0, -2},
+        {0, 2, -2},
+        {-2, 0, -2},
+        {3.5, -1, -5},
+        {2.5, 1.5, -5},
+        {-1, 0.5, -5}};
 
-    std::vector<Eigen::Vector3f> pos
-            {
-                    {2, 0, -2},
-                    {0, 2, -2},
-                    {-2, 0, -2},
-                    {3.5, -1, -5},
-                    {2.5, 1.5, -5},
-                    {-1, 0.5, -5}
-            };
+    std::vector<Eigen::Vector3i> ind{
+        {0, 1, 2},
+        {3, 4, 5}};
 
-    std::vector<Eigen::Vector3i> ind
-            {
-                    {0, 1, 2},
-                    {3, 4, 5}
-            };
-
-    std::vector<Eigen::Vector3f> cols
-            {
-                    {217.0, 238.0, 185.0},
-                    {217.0, 238.0, 185.0},
-                    {217.0, 238.0, 185.0},
-                    {185.0, 217.0, 238.0},
-                    {185.0, 217.0, 238.0},
-                    {185.0, 217.0, 238.0}
-            };
+    std::vector<Eigen::Vector3f> cols{
+        {217.0, 238.0, 185.0},
+        {217.0, 238.0, 185.0},
+        {217.0, 238.0, 185.0},
+        {185.0, 217.0, 238.0},
+        {185.0, 217.0, 238.0},
+        {185.0, 217.0, 238.0}};
 
     auto pos_id = r.load_positions(pos);
     auto ind_id = r.load_indices(ind);
@@ -104,7 +133,7 @@ int main(int argc, const char** argv)
         return 0;
     }
 
-    while(key != 27)
+    while (key != 27)
     {
         r.clear(rst::Buffers::Color | rst::Buffers::Depth);
 
@@ -125,4 +154,3 @@ int main(int argc, const char** argv)
 
     return 0;
 }
-// clang-format on
