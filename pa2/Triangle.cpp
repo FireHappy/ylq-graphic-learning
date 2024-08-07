@@ -21,15 +21,15 @@ Triangle::Triangle()
     tex_coords[2] << 0.0, 0.0;
 }
 
-void Triangle::setVertex(int ind, Vector3f ver)
+void Triangle::setVertex(int index, Vector3f ver)
 {
-    v[ind] = ver;
+    v[index] = ver;
 }
-void Triangle::setNormal(int ind, Vector3f n)
+void Triangle::setNormal(int index, Vector3f _normal)
 {
-    normal[ind] = n;
+    normal[index] = _normal;
 }
-void Triangle::setColor(int ind, float r, float g, float b)
+void Triangle::setColor(int index, float r, float g, float b)
 {
     if ((r < 0.0) || (r > 255.) ||
         (g < 0.0) || (g > 255.) ||
@@ -40,12 +40,13 @@ void Triangle::setColor(int ind, float r, float g, float b)
         exit(-1);
     }
 
-    color[ind] = Vector3f((float)r / 255., (float)g / 255., (float)b / 255.);
+    color[index] = Vector3f((float)r / 255., (float)g / 255., (float)b / 255.);
     return;
 }
-void Triangle::setTexCoord(int ind, float s, float t)
+
+void Triangle::setTexCoord(int index, float s, float t)
 {
-    tex_coords[ind] = Vector2f(s, t);
+    tex_coords[index] = Vector2f(s, t);
 }
 
 std::array<Vector4f, 3> Triangle::toVector4() const
