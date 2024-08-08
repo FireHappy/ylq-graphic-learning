@@ -3,6 +3,7 @@
 //
 
 #include "Triangle.hpp"
+#include "eigen3/Eigen/src/Core/Matrix.h"
 #include <algorithm>
 #include <array>
 

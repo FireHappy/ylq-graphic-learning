@@ -1,9 +1,9 @@
-// clang-format
 //
 // Created by goksu on 4/6/19.
 //
 
 #include <algorithm>
+#include <iostream>
 #include <vector>
 #include "rasterizer.hpp"
 #include <opencv2/opencv.hpp>
@@ -38,28 +38,34 @@ Vector4f to_vec4(const Eigen::Vector3f &v3, float w = 1.0f)
     return Vector4f(v3.x(), v3.y(), v3.z(), w);
 }
 
+float cross(Vector2f v1, Vector2f v2)
+{
+    return v1.x() * v2.y() - v1.y() * v2.x();
+}
+
 static bool insideTriangle(int x, int y, const Vector3f *_v)
 {
-    // TODO : Implement this function to check if the point (x, y) is inside the triangle represented by _v[0], _v[1], _v[2]
-    Vector3f p = Vector3f(x, y, _v[0].z());
-    Vector3f a = _v[0];
-    Vector3f b = _v[1];
-    Vector3f c = _v[2];
-    Vector3f ab = b - a, ap = p - a;
-    Vector3f bc = c - b, bp = p - b;
-    Vector3f ca = a - c, cp = p - c;
-    Vector3f r1 = ab.cross(ap);
-    Vector3f r2 = bc.cross(bp);
-    Vector3f r3 = ca.cross(cp);
+    // 二维屏幕空间
+    Vector2f p = Vector2f(x, y);
+    Vector2f a = Vector2f(_v[0].x(), _v[0].y());
+    Vector2f b = Vector2f(_v[1].x(), _v[1].y());
+    Vector2f c = Vector2f(_v[2].x(), _v[2].y());
+    Vector2f ab = b - a, ap = p - a;
+    Vector2f bc = c - b, bp = p - b;
+    Vector2f ca = a - c, cp = p - c;
+    float r1 = cross(ab, ap);
+    float r2 = cross(bc, bp);
+    float r3 = cross(ca, cp);
 
     int overZeroCount = 0;
-    if (r1.z() > 0)
+    if (r1 > 0)
         overZeroCount++;
-    if (r2.z() > 0)
+    if (r2 > 0)
         overZeroCount++;
-    if (r3.z() > 0)
+    if (r3 > 0)
         overZeroCount++;
 
+    // z的符号相同,则证明的点在三角形内,否则在三角形外
     return overZeroCount == 0 || overZeroCount == 3;
 }
 
@@ -115,7 +121,6 @@ void rst::rasterizer::draw(pos_buf_id pos_buffer, ind_buf_id ind_buffer, col_buf
         t.setColor(0, col_x[0], col_x[1], col_x[2]);
         t.setColor(1, col_y[0], col_y[1], col_y[2]);
         t.setColor(2, col_z[0], col_z[1], col_z[2]);
-
         rasterize_triangle(t);
     }
 }
@@ -125,8 +130,46 @@ void rst::rasterizer::rasterize_triangle(const Triangle &t)
 {
     auto v = t.toVector4();
 
-    // TODO : Find out the bounding box of current triangle.
+    // Implement this function to check if the point(x, y) is inside the triangle represented by _v[0], _v[1], _v[2]
+    int minX = v[0].x();
+    int maxX = v[0].x();
+    int minY = v[0].y();
+    int maxY = v[0].y();
+
+    std::array<Vector3f, 3> _v;
+
+    for (size_t i = 0; i < v.size(); i++)
+    {
+        if (minX > v[i].x())
+            minX = v[i].x();
+        if (maxX < v[i].x())
+            maxX = v[i].x() + 1;
+
+        if (minY > v[i].y())
+            minY = v[i].y();
+        if (maxY < v[i].y())
+            maxY = v[i].y() + 1;
+
+        _v[i] = Vector3f(v[i].x(), v[i].y(), v[i].z());
+    }
+
     // iterate through the pixel and find if the current pixel is inside the triangle
+    for (size_t i = minX; i < maxX; i++)
+    {
+        for (size_t j = minY; j < maxY; j++)
+        {
+            if (insideTriangle(i, j, _v.begin()))
+            {
+                std::cout << "inside triangle" << '\n';
+                Vector3f point = Vector3f(i, j, 1.0f);
+                set_pixel(point, *t.color);
+            }
+            else
+            {
+                std::cout << "outside triangle" << '\n';
+            }
+        }
+    }
 
     // If so, use the following code to get the interpolated z value.
     // auto[alpha, beta, gamma] = computeBarycentric2D(x, y, t.v);
@@ -181,5 +224,3 @@ void rst::rasterizer::set_pixel(const Eigen::Vector3f &point, const Eigen::Vecto
     auto ind = (height - 1 - point.y()) * width + point.x();
     frame_buf[ind] = color;
 }
-
-// clang-format on
