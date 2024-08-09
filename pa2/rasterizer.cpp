@@ -164,10 +164,6 @@ void rst::rasterizer::rasterize_triangle(const Triangle &t)
                 Vector3f point = Vector3f(i, j, 1.0f);
                 set_pixel(point, *t.color);
             }
-            else
-            {
-                std::cout << "outside triangle" << '\n';
-            }
         }
     }
 
