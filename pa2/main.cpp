@@ -16,7 +16,15 @@ Eigen::Matrix4f get_view_matrix(Eigen::Vector3f eye_pos)
         0, 0, 1, -eye_pos[2],
         0, 0, 0, 1;
 
-    view = translate * view;
+    // 先写出一个从标准坐标系到人眼坐标的旋转矩阵
+    Eigen::Matrix4f rotate;
+    rotate << 1, 0, 0, 0,
+        0, 1, 0, 0,
+        0, 0, -1, 0,
+        0, 0, 0, 1;
+
+    // 因为旋转矩阵是单位矩阵,因此矩阵的逆=矩阵的倒置
+    view = rotate.transpose() * translate * view;
 
     return view;
 }
