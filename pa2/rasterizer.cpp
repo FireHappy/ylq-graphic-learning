@@ -169,9 +169,10 @@ void rst::rasterizer::rasterize_triangle(const Triangle &t)
                 if (z_interpolated < depth_buf[get_index(i, j)])
                 {
                     depth_buf[get_index(i, j)] = z_interpolated;
-                    int superSample = 2, insideCount = 0;
-                    float stepLength = 1.0f / (2 * superSample);
-                    Vector2f minPoint = Vector2f(i, j) - (superSample - 1) * Vector2f(stepLength, stepLength);
+                    int superSample = 3;
+                    float insideCount = 0.0f;
+                    float stepLength = 1.0f / superSample;
+                    Vector2f minPoint = Vector2f(i, j) - (superSample - 1) / 2 * Vector2f(stepLength, stepLength);
                     for (size_t x = 0; x < superSample; x++)
                     {
                         for (size_t y = 0; y < superSample; y++)
@@ -183,7 +184,7 @@ void rst::rasterizer::rasterize_triangle(const Triangle &t)
                             }
                         }
                     }
-                    float percent = (float)insideCount / (superSample * superSample);
+                    float percent = insideCount / (superSample * superSample);
                     // set the current pixel (use the set_pixel function) to the color of the triangle (use getColor function) if it should be painted.
                     set_pixel(Vector3f(i, j, 1), t.getColor() * percent);
                 }
