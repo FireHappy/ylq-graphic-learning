@@ -160,38 +160,39 @@ void rst::rasterizer::rasterize_triangle(const Triangle &t)
         {
             if (insideTriangle(i, j, _v.begin()))
             {
-                // If so, use the following code to get the interpolated z value.
-                auto [alpha, beta, gamma] = computeBarycentric2D(i, j, t.v);
-                float w_reciprocal = 1.0 / (alpha / v[0].w() + beta / v[1].w() + gamma / v[2].w());
-                float z_interpolated = alpha * v[0].z() / v[0].w() + beta * v[1].z() / v[1].w() + gamma * v[2].z() / v[2].w();
-                z_interpolated *= -w_reciprocal;
-
-                if (z_interpolated < depth_buf[get_index(i, j)])
+                int superSample = 2;
+                float insideCount = 0.0f;
+                float stepLength = 1.0f / superSample;
+                Vector2f minPoint = Vector2f(i, j) - (superSample - 1) / 2 * Vector2f(stepLength, stepLength);
+                for (size_t x = 0; x < superSample; x++)
                 {
-                    depth_buf[get_index(i, j)] = z_interpolated;
-                    int superSample = 3;
-                    float insideCount = 0.0f;
-                    float stepLength = 1.0f / superSample;
-                    Vector2f minPoint = Vector2f(i, j) - (superSample - 1) / 2 * Vector2f(stepLength, stepLength);
-                    for (size_t x = 0; x < superSample; x++)
+                    for (size_t y = 0; y < superSample; y++)
                     {
-                        for (size_t y = 0; y < superSample; y++)
+                        Vector2f point = minPoint + Vector2f(x * stepLength, y * stepLength);
+                        if (insideTriangle(point.x(), point.y(), _v.begin()))
                         {
-                            Vector2f point = minPoint + Vector2f(x * stepLength, y * stepLength);
-                            if (insideTriangle(point.x(), point.y(), _v.begin()))
+                            auto [alpha, beta, gamma] = computeBarycentric2D(point.x(), point.y(), t.v);
+                            float w_reciprocal = 1.0 / (alpha / v[0].w() + beta / v[1].w() + gamma / v[2].w());
+                            float z_interpolated = alpha * v[0].z() / v[0].w() + beta * v[1].z() / v[1].w() + gamma * v[2].z() / v[2].w();
+                            z_interpolated *= w_reciprocal;
+                            std::cout << "x_index:" << i * superSample + x << " y_index:" << j * superSample + y << "z_interpolated:" << z_interpolated << "\n";
+                            if (z_interpolated < depth_buf[get_index(i * superSample + x, j * superSample + y)])
                             {
-                                insideCount++;
+                                depth_buf[get_index(i * superSample + x, j * superSample + y)] = z_interpolated;
+                                insideCount += 1.0f;
                             }
                         }
                     }
-                    float percent = insideCount / (superSample * superSample);
-                    // set the current pixel (use the set_pixel function) to the color of the triangle (use getColor function) if it should be painted.
-                    set_pixel(Vector3f(i, j, 1), t.getColor() * percent);
                 }
+                float percent = insideCount / (superSample * superSample);
+                // std::cout << "percent:" << percent << " insideCount:" << insideCount << "\n";
+                // set the current pixel (use the set_pixel function) to the color of the triangle (use getColor function) if it should be painted.
+                if (insideCount != 0)
+                    set_pixel(Vector3f(i, j, 1), t.getColor() * percent);
             }
         }
-    };
-}
+    }
+};
 
 void rst::rasterizer::set_model(const Eigen::Matrix4f &m)
 {
