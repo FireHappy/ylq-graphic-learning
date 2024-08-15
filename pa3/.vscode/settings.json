@@ -1,0 +1,25 @@
+{
+    "cmake.sourceDirectory": "/Users/chenlin/projects/LearningProjects/ylq-graphic-learning/pa3",
+    "cSpell.words": [
+        "curline",
+        "icurline",
+        "illum",
+        "indnum",
+        "matname",
+        "meshname",
+        "mtllib",
+        "newmtl",
+        "OBJL",
+        "pathtomat",
+        "sface",
+        "snor",
+        "spos",
+        "stex",
+        "svert",
+        "texcoords",
+        "usemtl",
+        "vnor",
+        "vpos",
+        "vtex"
+    ]
+}
