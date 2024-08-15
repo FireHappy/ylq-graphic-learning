@@ -60,15 +60,15 @@ namespace rst
     class rasterizer
     {
     public:
-        rasterizer(int w, int h);
-        pos_buf_id load_positions(const std::vector<Eigen::Vector3f>& positions);
-        ind_buf_id load_indices(const std::vector<Eigen::Vector3i>& indices);
-        col_buf_id load_colors(const std::vector<Eigen::Vector3f>& colors);
-        col_buf_id load_normals(const std::vector<Eigen::Vector3f>& normals);
+        rasterizer(int w, int h, int superSample);
+        pos_buf_id load_positions(const std::vector<Eigen::Vector3f> &positions);
+        ind_buf_id load_indices(const std::vector<Eigen::Vector3i> &indices);
+        col_buf_id load_colors(const std::vector<Eigen::Vector3f> &colors);
+        col_buf_id load_normals(const std::vector<Eigen::Vector3f> &normals);
 
-        void set_model(const Eigen::Matrix4f& m);
-        void set_view(const Eigen::Matrix4f& v);
-        void set_projection(const Eigen::Matrix4f& p);
+        void set_model(const Eigen::Matrix4f &m);
+        void set_view(const Eigen::Matrix4f &v);
+        void set_projection(const Eigen::Matrix4f &p);
 
         void set_texture(Texture tex) { texture = tex; }
 
@@ -82,12 +82,12 @@ namespace rst
         void draw(pos_buf_id pos_buffer, ind_buf_id ind_buffer, col_buf_id col_buffer, Primitive type);
         void draw(std::vector<Triangle *> &TriangleList);
 
-        std::vector<Eigen::Vector3f>& frame_buffer() { return frame_buf; }
+        std::vector<Eigen::Vector3f> &frame_buffer() { return frame_buf; }
 
     private:
         void draw_line(Eigen::Vector3f begin, Eigen::Vector3f end);
 
-        void rasterize_triangle(const Triangle& t, const std::array<Eigen::Vector3f, 3>& world_pos);
+        void rasterize_triangle(const Triangle &t, const std::array<Eigen::Vector3f, 3> &world_pos);
 
         // VERTEX SHADER -> MVP -> Clipping -> /.W -> VIEWPORT -> DRAWLINE/DRAWTRI -> FRAGSHADER
 
@@ -111,6 +111,8 @@ namespace rst
         std::vector<Eigen::Vector3f> frame_buf;
         std::vector<float> depth_buf;
         int get_index(int x, int y);
+
+        int superSample;
 
         int width, height;
 

@@ -179,7 +179,7 @@ namespace objl
         std::string map_Kd;
         // Specular Texture Map
         std::string map_Ks;
-        // Specular Hightlight Map
+        // Specular Highlight Map
         std::string map_Ns;
         // Alpha Texture Map
         std::string map_d;

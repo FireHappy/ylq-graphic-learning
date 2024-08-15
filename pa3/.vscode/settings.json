@@ -11,6 +11,7 @@
         "newmtl",
         "OBJL",
         "pathtomat",
+        "produect",
         "sface",
         "snor",
         "spos",
@@ -87,6 +88,8 @@
         "typeinfo": "cpp",
         "unordered_map": "cpp",
         "variant": "cpp",
-        "algorithm": "cpp"
-    }
+        "algorithm": "cpp",
+        "core": "cpp"
+    },
+    "C_Cpp.errorSquiggles": "disabled"
 }

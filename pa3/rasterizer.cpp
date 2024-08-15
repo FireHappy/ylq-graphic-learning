@@ -259,6 +259,70 @@ static Eigen::Vector2f interpolate(float alpha, float beta, float gamma, const E
 void rst::rasterizer::rasterize_triangle(const Triangle &t, const std::array<Eigen::Vector3f, 3> &view_pos)
 {
     // TODO: From your HW3, get the triangle rasterization code.
+    auto v = t.toVector4();
+    for (auto &vv : v)
+    {
+        std::cout << vv.x() << "  " << vv.y() << "  " << vv.z() << "  " << vv.w() << std::endl;
+    }
+
+    // Implement this function to check if the point(x, y) is inside the triangle represented by _v[0], _v[1], _v[2]
+    int minX = v[0].x();
+    int maxX = v[0].x();
+    int minY = v[0].y();
+    int maxY = v[0].y();
+
+    for (size_t i = 0; i < v.size(); i++)
+    {
+        if (minX > v[i].x())
+            minX = v[i].x();
+        if (maxX < v[i].x())
+            maxX = v[i].x() + 1;
+
+        if (minY > v[i].y())
+            minY = v[i].y();
+        if (maxY < v[i].y())
+            maxY = v[i].y() + 1;
+    }
+
+    std::cout << minX << "  " << maxX << "  " << minY << "  " << maxY << std::endl;
+
+    // iterate through the pixel and find if the current pixel is inside the triangle
+    for (size_t i = minX; i <= maxX; i++)
+    {
+        for (size_t j = minY; j <= maxY; j++)
+        {
+            float px = i + 0.5f, py = j + 0.5f;
+            if (insideTriangle(px, py, t.v))
+            {
+                float insideCount = 0.0f;
+                float stepLength = 1.0f / superSample;
+                Vector2f minPoint = Vector2f(px, py) - ((superSample - 1) / 2.0f) * Vector2f(stepLength, stepLength);
+                for (size_t x = 0; x < superSample; x++)
+                {
+                    for (size_t y = 0; y < superSample; y++)
+                    {
+                        Vector2f point = minPoint + Vector2f(x * stepLength, y * stepLength);
+                        if (insideTriangle(point.x(), point.y(), t.v))
+                        {
+                            auto [alpha, beta, gamma] = computeBarycentric2D(point.x(), point.y(), t.v);
+                            float w_reciprocal = 1.0 / (alpha / v[0].w() + beta / v[1].w() + gamma / v[2].w());
+                            float z_interpolated = alpha * v[0].z() / v[0].w() + beta * v[1].z() / v[1].w() + gamma * v[2].z() / v[2].w();
+                            z_interpolated *= -w_reciprocal;
+                            // std::cout << get_index(i * superSample + x, j * superSample + y) << std::endl;
+                            if (z_interpolated < depth_buf[get_index(i * superSample + x, j * superSample + y)])
+                            {
+                                depth_buf[get_index(i * superSample + x, j * superSample + y)] = z_interpolated;
+                                insideCount += 1.0f;
+                            }
+                        }
+                    }
+                }
+                float percent = insideCount / (superSample * superSample);
+                if (insideCount != 0)
+                    set_pixel(Vector2i(i, j), t.getColor() * percent);
+            }
+        }
+    }
     // TODO: Inside your rasterization loop:
     //    * v[i].w() is the vertex view space depth value z.
     //    * Z is interpolated view space depth for the current pixel
@@ -307,16 +371,16 @@ void rst::rasterizer::clear(rst::Buffers buff)
     }
 }
 
-rst::rasterizer::rasterizer(int w, int h) : width(w), height(h)
+rst::rasterizer::rasterizer(int w, int h, int superSample) : width(w), height(h), superSample(superSample)
 {
     frame_buf.resize(w * h);
-    depth_buf.resize(w * h);
+    depth_buf.resize(w * h * superSample * superSample);
     texture = std::nullopt;
 }
 
 int rst::rasterizer::get_index(int x, int y)
 {
-    return (height - y) * width + x;
+    return (height * superSample - 1 - y) * width * superSample + x;
 }
 
 void rst::rasterizer::set_pixel(const Vector2i &point, const Eigen::Vector3f &color)

@@ -18,7 +18,15 @@ Eigen::Matrix4f get_view_matrix(Eigen::Vector3f eye_pos)
         0, 0, 1, -eye_pos[2],
         0, 0, 0, 1;
 
-    view = translate * view;
+    // 先写出一个从标准坐标系到人眼坐标的旋转矩阵
+    Eigen::Matrix4f rotate;
+    rotate << 1, 0, 0, 0,
+        0, 1, 0, 0,
+        0, 0, -1, 0,
+        0, 0, 0, 1;
+
+    // 因为旋转矩阵是单位矩阵,因此矩阵的逆=矩阵的倒置
+    view = rotate.transpose() * translate * view;
 
     return view;
 }
@@ -47,9 +55,50 @@ Eigen::Matrix4f get_model_matrix(float angle)
     return translate * rotation * scale;
 }
 
+float anlge_to_radian(float angle)
+{
+    return angle * MY_PI / 180;
+}
+
 Eigen::Matrix4f get_projection_matrix(float eye_fov, float aspect_ratio, float zNear, float zFar)
 {
     // TODO: Use the same projection matrix from the previous assignments
+    // Students will implement this function
+    Eigen::Matrix4f projection = Eigen::Matrix4f::Identity();
+
+    // 构建正交投影矩阵
+    Eigen::Matrix4f Mortho = Eigen::Matrix4f::Identity();
+    float n = zNear, f = zFar;
+    float t = tan(anlge_to_radian(eye_fov / 2)) * n;
+    float b = -t;
+    float r = aspect_ratio * t;
+    float l = -r;
+
+    // 将bounds长方体,移动到原点
+    Eigen::Matrix4f translate = Eigen::Matrix4f::Identity();
+    translate << 1, 0, 0, -(r + l) / 2,
+        0, 1, 0, -(t + b) / 2,
+        0, 0, 1, -(n + f) / 2,
+        0, 0, 0, 1;
+
+    // 将bounds长方体,缩放成边长为2的立方体
+    Eigen::Matrix4f scale = Eigen::Matrix4f::Identity();
+    translate << 2 / (r - l), 0, 0, 0,
+        0, 2 / (t - b), 0, 0,
+        0, 0, 2 / (n - f), 0,
+        0, 0, 0, 1;
+
+    Mortho = scale * translate;
+
+    // 构建将视椎体压缩成长方体的矩阵
+    Eigen::Matrix4f Mpersp_ortho;
+    Mpersp_ortho << n, 0, 0, 0,
+        0, n, 0, 0,
+        0, 0, n + f, -n * f,
+        0, 0, 1, 0;
+
+    projection = Mortho * Mpersp_ortho * projection;
+    return projection;
 }
 
 Eigen::Vector3f vertex_shader(const vertex_shader_payload &payload)
@@ -146,7 +195,6 @@ Eigen::Vector3f phong_fragment_shader(const fragment_shader_payload &payload)
 
 Eigen::Vector3f displacement_fragment_shader(const fragment_shader_payload &payload)
 {
-
     Eigen::Vector3f ka = Eigen::Vector3f(0.005, 0.005, 0.005);
     Eigen::Vector3f kd = payload.color;
     Eigen::Vector3f ks = Eigen::Vector3f(0.7937, 0.7937, 0.7937);
@@ -254,7 +302,7 @@ int main(int argc, const char **argv)
         }
     }
 
-    rst::rasterizer r(700, 700);
+    rst::rasterizer r(700, 700, 2);
 
     auto texture_path = "hmap.jpg";
     r.set_texture(Texture(obj_path + texture_path));
