@@ -108,6 +108,7 @@ Eigen::Vector3f vertex_shader(const vertex_shader_payload &payload)
 
 Eigen::Vector3f normal_fragment_shader(const fragment_shader_payload &payload)
 {
+    // ？？？
     Eigen::Vector3f return_color = (payload.normal.head<3>().normalized() + Eigen::Vector3f(1.0f, 1.0f, 1.0f)) / 2.f;
     Eigen::Vector3f result;
     result << return_color.x() * 255, return_color.y() * 255, return_color.z() * 255;
@@ -132,6 +133,8 @@ Eigen::Vector3f texture_fragment_shader(const fragment_shader_payload &payload)
     if (payload.texture)
     {
         // TODO: Get the texture value at the texture coordinates of the current fragment
+        // return_color = payload.texture->getColorBilinear(payload.tex_coords.x(), payload.tex_coords.y());
+        return_color = payload.texture->getColor(payload.tex_coords.x(), payload.tex_coords.y());
     }
     Eigen::Vector3f texture_color;
     texture_color << return_color.x(), return_color.y(), return_color.z();
@@ -145,7 +148,7 @@ Eigen::Vector3f texture_fragment_shader(const fragment_shader_payload &payload)
 
     std::vector<light> lights = {l1, l2};
     Eigen::Vector3f amb_light_intensity{10, 10, 10};
-    Eigen::Vector3f eye_pos{0, 0, 10};
+    Eigen::Vector3f eye_pos{0, 0, 10}; // ??? 视线位置应该是000吧
 
     float p = 150;
 
@@ -154,11 +157,28 @@ Eigen::Vector3f texture_fragment_shader(const fragment_shader_payload &payload)
     Eigen::Vector3f normal = payload.normal;
 
     Eigen::Vector3f result_color = {0, 0, 0};
-
+    Vector3f view_dir = (eye_pos - point).normalized();
     for (auto &light : lights)
     {
         // TODO: For each light source in the code, calculate what the *ambient*, *diffuse*, and *specular*
         // components are. Then, accumulate that result on the *result_color* object.
+        float rr = (light.position - point).squaredNorm();
+        Vector3f diffsue(0, 0, 0);
+        Vector3f specular(0, 0, 0);
+        Vector3f ambient(0, 0, 0);
+        Vector3f light_dir = (light.position - point).normalized();
+
+        for (size_t i = 0; i < 3; i++)
+        {
+            Vector3f h = (view_dir + light_dir).normalized(); // half
+            float intensity = light.intensity[i] / rr;
+            diffsue[i] = kd[i] * intensity * std::max(0.0f, normal.dot(light_dir));
+            specular[i] = ks[i] * intensity * std::pow(std::max(0.0f, normal.dot(h)), p);
+            ambient[i] = amb_light_intensity[i] * ka[i];
+        }
+        result_color += diffsue;
+        result_color += specular;
+        result_color += ambient;
     }
 
     return result_color * 255.f;
@@ -167,7 +187,7 @@ Eigen::Vector3f texture_fragment_shader(const fragment_shader_payload &payload)
 Eigen::Vector3f phong_fragment_shader(const fragment_shader_payload &payload)
 {
     Eigen::Vector3f ka = Eigen::Vector3f(0.005, 0.005, 0.005);
-    Eigen::Vector3f kd = payload.color;
+    Eigen::Vector3f kd = payload.color; // 仅此处与textcure_fragment_shader不同
     Eigen::Vector3f ks = Eigen::Vector3f(0.7937, 0.7937, 0.7937);
 
     auto l1 = light{{20, 20, 20}, {500, 500, 500}};
@@ -188,6 +208,29 @@ Eigen::Vector3f phong_fragment_shader(const fragment_shader_payload &payload)
     {
         // TODO: For each light source in the code, calculate what the *ambient*, *diffuse*, and *specular*
         // components are. Then, accumulate that result on the *result_color* object.
+        float rr = (light.position - point).squaredNorm(); // 求向量的二范数
+        // 声明漫反射/高光环境光
+        Eigen::Vector3f diffsue(0, 0, 0);
+        Eigen::Vector3f specular(0, 0, 0);
+        Eigen::Vector3f ambient(0, 0, 0);
+        // 光源方向 l向量
+        Eigen::Vector3f light_dir = (light.position - point).normalized();
+        // 视线方向 v向量
+        Eigen::Vector3f view_dir = (eye_pos - point).normalized();
+
+        for (size_t i = 0; i < 3; i++)
+        {
+            Vector3f h = (view_dir + light_dir).normalized(); // half
+            float intensity = light.intensity[i] / rr;
+            diffsue[i] = kd[i] * intensity * std::max(0.0f, normal.dot(light_dir));
+            specular[i] = ks[i] * intensity * std::pow(std::max(0.0f, normal.dot(h)), p);
+            ambient[i] = amb_light_intensity[i] * ka[i];
+        }
+
+        // result_color
+        result_color += diffsue;
+        result_color += specular;
+        result_color += ambient;
     }
 
     return result_color * 255.f;
@@ -195,6 +238,7 @@ Eigen::Vector3f phong_fragment_shader(const fragment_shader_payload &payload)
 
 Eigen::Vector3f displacement_fragment_shader(const fragment_shader_payload &payload)
 {
+
     Eigen::Vector3f ka = Eigen::Vector3f(0.005, 0.005, 0.005);
     Eigen::Vector3f kd = payload.color;
     Eigen::Vector3f ks = Eigen::Vector3f(0.7937, 0.7937, 0.7937);
@@ -205,8 +249,6 @@ Eigen::Vector3f displacement_fragment_shader(const fragment_shader_payload &payl
     std::vector<light> lights = {l1, l2};
     Eigen::Vector3f amb_light_intensity{10, 10, 10};
     Eigen::Vector3f eye_pos{0, 0, 10};
-
-    float p = 150;
 
     Eigen::Vector3f color = payload.color;
     Eigen::Vector3f point = payload.view_pos;
@@ -225,12 +267,55 @@ Eigen::Vector3f displacement_fragment_shader(const fragment_shader_payload &payl
     // Position p = p + kn * n * h(u,v)
     // Normal n = normalize(TBN * ln)
 
-    Eigen::Vector3f result_color = {0, 0, 0};
+    float x = normal.x();
+    float y = normal.y();
+    float z = normal.z();
+    Vector3f t(x * y / sqrt(x * x + z * z), sqrt(x * x + z * z), z * y / sqrt(x * x + z * z));
+    Vector3f b = normal.cross(t);
 
+    Matrix3f TBN;
+    TBN.col(0) = t.normalized();
+    TBN.col(1) = b.normalized();
+    TBN.col(2) = normal;
+
+    int w = payload.texture->width;
+    int h = payload.texture->height;
+    float u = payload.tex_coords.x();
+    float v = payload.tex_coords.y();
+    payload.texture->getColor(u, v);
+
+    auto huv = payload.texture->getColor(u, v).norm();
+
+    float dU = kh * kn * (payload.texture->getColor(u + 1.0f / w, v).norm() - huv);
+    float dV = kh * kn * (payload.texture->getColor(u, v + 1.0f / h).norm() - huv);
+
+    Vector3f ln(-dU, -dV, 1);
+    Vector3f n = (TBN * ln).normalized();
+    Vector3f p = point + n * huv * kn;
+
+    Eigen::Vector3f result_color = {0, 0, 0};
+    Vector3f view_dir = (eye_pos - p).normalized();
     for (auto &light : lights)
     {
         // TODO: For each light source in the code, calculate what the *ambient*, *diffuse*, and *specular*
         // components are. Then, accumulate that result on the *result_color* object.
+        float rr = (light.position - p).squaredNorm();
+        Vector3f diffsue(0, 0, 0);
+        Vector3f specular(0, 0, 0);
+        Vector3f ambient(0, 0, 0);
+        Vector3f light_dir = (light.position - p).normalized();
+
+        for (size_t i = 0; i < 3; i++)
+        {
+            Vector3f h = (view_dir + light_dir).normalized(); // half
+            float intensity = light.intensity[i] / rr;
+            diffsue[i] = kd[i] * intensity * std::max(0.0f, normal.dot(light_dir));
+            specular[i] = ks[i] * intensity * std::pow(std::max(0.0f, normal.dot(h)), 150);
+            ambient[i] = amb_light_intensity[i] * ka[i];
+        }
+        result_color += diffsue;
+        result_color += specular;
+        result_color += ambient;
     }
 
     return result_color * 255.f;
@@ -268,9 +353,33 @@ Eigen::Vector3f bump_fragment_shader(const fragment_shader_payload &payload)
     // Vector ln = (-dU, -dV, 1)
     // Normal n = normalize(TBN * ln)
 
-    Eigen::Vector3f result_color = {0, 0, 0};
-    result_color = normal;
+    // 什么含义??? 有待理解---学完光线追踪后回看
+    float x = normal.x();
+    float y = normal.y();
+    float z = normal.z();
+    Vector3f t(x * y / sqrt(x * x + z * z), sqrt(x * x + z * z), z * y / sqrt(x * x + z * z));
+    Vector3f b = normal.cross(t);
 
+    Matrix3f TBN;
+    TBN.col(0) = t;
+    TBN.col(1) = b;
+    TBN.col(2) = normal;
+
+    int w = payload.texture->width;
+    int h = payload.texture->height;
+    float u = payload.tex_coords.x();
+    float v = payload.tex_coords.y();
+    payload.texture->getColor(u, v);
+
+    auto huv = payload.texture->getColor(u, v).norm();
+
+    float dU = kh * kn * (payload.texture->getColor(u + 1.0f / w, v).norm() - huv);
+    float dV = kh * kn * (payload.texture->getColor(u, v + 1.0f / h).norm() - huv);
+
+    Vector3f ln(-dU, -dV, 1);
+    Vector3f n = (TBN * ln).normalized();
+
+    Eigen::Vector3f result_color = n;
     return result_color * 255.f;
 }
 
@@ -286,6 +395,13 @@ int main(int argc, const char **argv)
     std::string obj_path = "../res/models/spot/";
 
     // Load .obj File
+    // 从obj文件中读取顶点vertices信息和对应的textcure坐标，以及法向量normal
+    // v 几何体顶点(Geometric vertices)
+    // vt 贴图坐标点(Texture vertices)
+    // vn 顶点法线(Vertex normals)
+    // f 面(Face):
+    //      ”f verticeIndex\vtIndex\vnIndex”其中verticeIndex表示顶点序列号，vtIndex表示uv索引号，vnIndex表示法线索引号
+    //      其中vtIndex，vnIndex可以缺失，不写也没有关系，但是顶点索引值必须得有。
     bool loadout = Loader.LoadFile("../res/models/spot/spot_triangulated_good.obj");
     for (auto mesh : Loader.LoadedMeshes)
     {
@@ -307,6 +423,7 @@ int main(int argc, const char **argv)
     auto texture_path = "hmap.jpg";
     r.set_texture(Texture(obj_path + texture_path));
 
+    // 声明类封装的函数phong_fragment_shader -> active_shader，函数参数为fragment_shader_payload
     std::function<Eigen::Vector3f(fragment_shader_payload)> active_shader = phong_fragment_shader;
 
     if (argc >= 2)
@@ -318,7 +435,7 @@ int main(int argc, const char **argv)
         {
             std::cout << "Rasterizing using the texture shader\n";
             active_shader = texture_fragment_shader;
-            texture_path = "spot_texture.png";
+            texture_path = "rock.png";
             r.set_texture(Texture(obj_path + texture_path));
         }
         else if (argc == 3 && std::string(argv[2]) == "normal")
@@ -338,7 +455,7 @@ int main(int argc, const char **argv)
         }
         else if (argc == 3 && std::string(argv[2]) == "displacement")
         {
-            std::cout << "Rasterizing using the bump shader\n";
+            std::cout << "Rasterizing using the displacement shader\n";
             active_shader = displacement_fragment_shader;
         }
     }
