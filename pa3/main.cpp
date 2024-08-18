@@ -18,15 +18,7 @@ Eigen::Matrix4f get_view_matrix(Eigen::Vector3f eye_pos)
         0, 0, 1, -eye_pos[2],
         0, 0, 0, 1;
 
-    // 先写出一个从标准坐标系到人眼坐标的旋转矩阵
-    Eigen::Matrix4f rotate;
-    rotate << 1, 0, 0, 0,
-        0, 1, 0, 0,
-        0, 0, -1, 0,
-        0, 0, 0, 1;
-
-    // 因为旋转矩阵是单位矩阵,因此矩阵的逆=矩阵的倒置
-    view = rotate.transpose() * translate * view;
+    view = translate * view;
 
     return view;
 }
@@ -69,7 +61,9 @@ Eigen::Matrix4f get_projection_matrix(float eye_fov, float aspect_ratio, float z
     // 构建正交投影矩阵
     Eigen::Matrix4f Mortho = Eigen::Matrix4f::Identity();
     float n = zNear, f = zFar;
-    float t = tan(anlge_to_radian(eye_fov / 2)) * n;
+
+    // 因为OpenCV中相机的Y轴正方向朝下
+    float t = -tan(anlge_to_radian(eye_fov / 2)) * abs(n);
     float b = -t;
     float r = aspect_ratio * t;
     float l = -r;
@@ -168,6 +162,7 @@ Eigen::Vector3f texture_fragment_shader(const fragment_shader_payload &payload)
         Vector3f ambient(0, 0, 0);
         Vector3f light_dir = (light.position - point).normalized();
 
+        // 这里分别计算r,g,b三个颜色通道在
         for (size_t i = 0; i < 3; i++)
         {
             Vector3f h = (view_dir + light_dir).normalized(); // half
